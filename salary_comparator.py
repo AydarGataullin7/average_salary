@@ -45,10 +45,10 @@ def predict_rub_salary_for_superJob(vacancy):
     return average_salary
 
 
-def make_table_for_sj(languages):
-    API_KEY_SJ = os.getenv("API_KEY_SJ")
+def make_table_for_sj(languages, api_key_sj):
+
     url = "https://api.superjob.ru/2.0/vacancies/"
-    headers = {"X-Api-App-Id": API_KEY_SJ}
+    headers = {"X-Api-App-Id": api_key_sj}
     results_sj = {}
 
     for language in languages:
@@ -152,9 +152,11 @@ def make_table_for_hh(languages):
 
 def main():
     load_dotenv()
+    api_key_sj = os.getenv("API_KEY_SJ")
     languages = ["Python", "Java", "JavaScript", "C++", "C#", "PHP", "Go",
                  "Ruby", "Swift", "TypeScript"]
-    sj_table = make_table_for_sj(languages)
+    sj_table = make_table_for_sj(languages, api_key_sj.
+                                 )
     head_hunter = make_table_for_hh(languages)
     print(sj_table.table)
     print()
