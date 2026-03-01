@@ -93,14 +93,22 @@ def fetch_sj_language_stats(language, api_key_sj):
 
 
 def fetch_hh_language_stats(language):
-    url = f"https://api.hh.ru/vacancies?text=Программист {language}&search_field=name&period={HH_SEARCH_PERIOD_DAYS}&area={HH_AREA_ID}"
+    base_url = "https://api.hh.ru/vacancies"
+    params = {
+        'text': f"Программист {language}",
+        'search_field': 'name',
+        'period': HH_SEARCH_PERIOD_DAYS,
+        'area': HH_AREA_ID
+    }
+
     page = 0
     pages_number = 1
     salaries = []
     total_found = 0
 
     while page < pages_number:
-        response = requests.get(url, params={'page': page})
+        params['page'] = page
+        response = requests.get(base_url, params=params)
         data = response.json()
 
         if page == 0:
