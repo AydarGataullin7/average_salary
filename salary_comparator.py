@@ -17,18 +17,17 @@ SALARY_TO_ONLY_COEFFICIENT = 0.8
 
 
 def calculate_salary_from_parts(salary_from, salary_to):
-    if salary_from is not None and salary_to is not None:
+    if salary_from and salary_to:
         return (salary_from + salary_to) / SALARY_DIVIDER
-    elif salary_from is not None:
+    if salary_from:
         return salary_from * SALARY_FROM_ONLY_COEFFICIENT
-    elif salary_to is not None:
+    if salary_to:
         return salary_to * SALARY_TO_ONLY_COEFFICIENT
-    else:
-        return None
+    return None
 
 
 def predict_rub_salary(salary):
-    if salary is None:
+    if not salary:
         return None
 
     if salary.get('currency') != 'RUR':
@@ -74,14 +73,14 @@ def fetch_sj_language_stats(language, api_key_sj):
 
         for vacancy in data["objects"]:
             salary = predict_rub_salary_for_superJob(vacancy)
-            if salary is not None:
+            if salary:
                 salaries.append(salary)
 
         has_more = data['more']
         page += 1
 
     processed = len(salaries)
-    if processed > 0:
+    if processed:
         average_salary = int(sum(salaries) / processed)
     else:
         average_salary = None
@@ -110,13 +109,13 @@ def fetch_hh_language_stats(language):
 
         for vacancy in data['items']:
             salary = predict_rub_salary(vacancy['salary'])
-            if salary is not None:
+            if salary:
                 salaries.append(salary)
 
         page += 1
 
     processed = len(salaries)
-    if processed > 0:
+    if processed:
         average_salary = int(sum(salaries) / processed)
     else:
         average_salary = None
