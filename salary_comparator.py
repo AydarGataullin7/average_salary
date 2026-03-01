@@ -66,24 +66,24 @@ def fetch_sj_language_stats(language, api_key_sj):
     }
 
     page = 0
-    pages_number = 1
     salaries = []
     total_found = 0
+    has_more = True
 
-    while page < pages_number:
+    while has_more:
+        params['page'] = page
         response = requests.get(url, headers=headers, params=params)
         data = response.json()
 
         if page == 0:
             total_found = data['total']
-            pages_number = (total_found + SJ_RESULTS_PER_PAGE -
-                            1) // SJ_RESULTS_PER_PAGE
 
         for vacancy in data["objects"]:
             salary = predict_rub_salary_for_superJob(vacancy)
             if salary is not None:
                 salaries.append(salary)
 
+        has_more = data['more']
         page += 1
 
     processed = len(salaries)
