@@ -16,44 +16,38 @@ SALARY_FROM_ONLY_COEFFICIENT = 1.2
 SALARY_TO_ONLY_COEFFICIENT = 0.8
 
 
+def calculate_salary_from_parts(salary_from, salary_to):
+    if salary_from is not None and salary_to is not None:
+        return (salary_from + salary_to) / SALARY_DIVIDER
+    elif salary_from is not None:
+        return salary_from * SALARY_FROM_ONLY_COEFFICIENT
+    elif salary_to is not None:
+        return salary_to * SALARY_TO_ONLY_COEFFICIENT
+    else:
+        return None
+
+
 def predict_rub_salary(salary):
     if salary is None:
         return None
 
-    salary_from = salary.get('from')
-    salary_to = salary.get('to')
-
     if salary.get('currency') != 'RUR':
         return None
 
-    if salary_from is not None and salary_to is not None:
-        average_salary = (salary_from + salary_to) / SALARY_DIVIDER
-    elif salary_from is not None:
-        average_salary = salary_from * SALARY_FROM_ONLY_COEFFICIENT
-    elif salary_to is not None:
-        average_salary = salary_to * SALARY_TO_ONLY_COEFFICIENT
-    else:
-        return None
-
-    return average_salary
+    return calculate_salary_from_parts(
+        salary.get('from'),
+        salary.get('to')
+    )
 
 
 def predict_rub_salary_for_superJob(vacancy):
-    salary_from = vacancy.get('payment_from')
-    salary_to = vacancy.get('payment_to')
-
     if vacancy.get('currency') != 'rub':
         return None
 
-    if salary_from is not None and salary_to is not None:
-        average_salary = (salary_from + salary_to) / SALARY_DIVIDER
-    elif salary_from is not None:
-        average_salary = salary_from * SALARY_FROM_ONLY_COEFFICIENT
-    elif salary_to is not None:
-        average_salary = salary_to * SALARY_TO_ONLY_COEFFICIENT
-    else:
-        return None
-    return average_salary
+    return calculate_salary_from_parts(
+        vacancy.get('payment_from'),
+        vacancy.get('payment_to')
+    )
 
 
 def fetch_sj_language_stats(language, api_key_sj):
