@@ -48,7 +48,7 @@ API_KEY_SJ=ваш_секретный_ключ
 
 ```
 bash
-python work_hh.py
+python salary_comparator.py
 ```
 
 ## Пример вывода
