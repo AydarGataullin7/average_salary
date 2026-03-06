@@ -4,8 +4,6 @@ import os
 from dotenv import load_dotenv
 from terminaltables import AsciiTable
 
-load_dotenv()
-
 MOSCOW_AREA_ID = 4
 SJ_RESULTS_PER_PAGE = 100
 HH_SEARCH_PERIOD_DAYS = 30
@@ -135,43 +133,51 @@ def fetch_hh_language_stats(language):
     }
 
 
-def make_table_for_sj(languages, api_key_sj):
-    results_sj = {}
+def get_sj_stats(languages, api_key_sj):
+    sj_language_stats = {}
     for language in languages:
-        results_sj[language] = fetch_sj_language_stats(language, api_key_sj)
+        sj_language_stats[language] = fetch_sj_language_stats(
+            language, api_key_sj)
+    return sj_language_stats
 
+
+def get_hh_stats(languages):
+    hh_language_stats = {}
+    for language in languages:
+        hh_language_stats[language] = fetch_hh_language_stats(language)
+    return hh_language_stats
+
+
+def build_table(stats, title, found_key, processed_key, salary_key):
     table_data = [('Язык программирования', 'Вакансий найдено',
                    'Вакансий обработано', 'Средняя зарплата')]
-    for lang, stats in results_sj.items():
-        table_data.append(
-            (lang, stats['total_found'], stats['vacancies_processed'], stats['average_salary']))
-
-    return AsciiTable(table_data, 'SuperJob Moscow')
-
-
-def make_table_for_hh(languages):
-    results = {}
-    for language in languages:
-        results[language] = fetch_hh_language_stats(language)
-
-    table_data = [('Язык программирования', 'Вакансий найдено',
-                   'Вакансий обработано', 'Средняя зарплата')]
-    for lang, stats in results.items():
-        table_data.append(
-            (lang, stats['vacancies_found'], stats['vacancies_processed'], stats['average_salary']))
-
-    return AsciiTable(table_data, 'HeadHunter Moscow')
+    for lang, data in stats.items():
+        table_data.append((
+            lang,
+            data[found_key],
+            data[processed_key],
+            data[salary_key]
+        ))
+    return AsciiTable(table_data, title)
 
 
 def main():
+    load_dotenv()
     api_key_sj = os.getenv("API_KEY_SJ")
     languages = ["Python", "Java", "JavaScript", "C++", "C#", "PHP", "Go",
                  "Ruby", "Swift", "TypeScript"]
-    sj_table = make_table_for_sj(languages, api_key_sj)
-    head_hunter = make_table_for_hh(languages)
+
+    sj_stats = get_sj_stats(languages, api_key_sj)
+    hh_stats = get_hh_stats(languages)
+
+    sj_table = build_table(sj_stats, 'SuperJob Moscow',
+                           'total_found', 'vacancies_processed', 'average_salary')
+    hh_table = build_table(hh_stats, 'HeadHunter Moscow',
+                           'vacancies_found', 'vacancies_processed', 'average_salary')
+
     print(sj_table.table)
     print()
-    print(head_hunter.table)
+    print(hh_table.table)
 
 
 if __name__ == '__main__':
